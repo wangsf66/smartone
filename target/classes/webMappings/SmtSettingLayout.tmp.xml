@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping-configuration>
+	<property supportCover="true" supportDelete="true" extendExpr="PAGE_JSON,STATE,REMARK,CMPT_TYPE,CODE,JSON,PAGE_ID,VERSION,NAME,SORT" />
+	<table name="SMT_SETTING_LAYOUT"  createMode="create">
+	<import-columns path="mappings/basecolumns.xml"/>
+	<columns>
+		<column name="PAGE_JSON"  description="页面JSON数据" dataType="clob" length="1"    nullable="true" validate="true"/>
+		<column name="STATE"  description="状态" dataType="number" length="1"    nullable="true" validate="true"/>
+		<column name="REMARK"  description="描述" dataType="string" length="200"    nullable="true" validate="true"/>
+		<column name="CMPT_TYPE"  description="组件类型" dataType="string" length="20"    nullable="true" validate="true"/>
+		<column name="CODE"  description="组件编码" dataType="string" length="50"    nullable="true" validate="true"/>
+		<column name="JSON"  description="json数据" dataType="clob" length="1"    nullable="true" validate="true"/>
+		<column name="PAGE_ID"  description="所属页面ID" dataType="string" length="36"    nullable="true" validate="true"/>
+		<column name="VERSION"  description="版本" dataType="string" length="50"    nullable="true" validate="true"/>
+		<column name="NAME"  description="组件名称" dataType="string" length="50"    nullable="true" validate="true"/>
+		<column name="SORT"  description="排序" dataType="number" length="1"    nullable="true" validate="true"/>
+	</columns>
+	<primaryKeyHandler type="uuid36"></primaryKeyHandler>
+	<validators>
+		<validator name="PAGE_JSON"  com.smartone.ex.validators.IsNullValidator="true" /> 
+		<validator name="STATE"  com.smartone.ex.validators.IsNullValidator="true" /> 
+		<validator name="REMARK"  com.smartone.ex.validators.IsNullValidator="true" /> 
+		<validator name="CMPT_TYPE"  com.smartone.ex.validators.IsNullValidator="true" /> 
+		<validator name="CODE"  com.smartone.ex.validators.IsNullValidator="true" /> 
+		<validator name="JSON"  com.smartone.ex.validators.IsNullValidator="true" /> 
+		<validator name="PAGE_ID"  com.smartone.ex.validators.IsNullValidator="true" /> 
+		<validator name="VERSION"  com.smartone.ex.validators.IsNullValidator="true" /> 
+		<validator name="NAME"  com.smartone.ex.validators.IsNullValidator="true" /> 
+		<validator name="SORT"  com.smartone.ex.validators.IsNullValidator="true" /> 
+	</validators>
+	</table>
+</mapping-configuration>

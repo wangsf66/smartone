@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping-configuration>
+	 <table name="DM_PUBLISH_TABLE_DATA" class="com.smartone.ddm.resource.entity.DmPublishTableData" strict="true">
+		<columns>
+			<column name="id" property="id" dataType="string" length="36" />
+			<column name="create_user_id" property="createUserId" dataType="string" length="36" nullable="false" />
+			<column name="create_date" property="createDate" dataType="datetime" nullable="false" />
+			<column name="last_update_user_id" property="lastUpdateUserId" dataType="string" length="36" nullable="false" />
+			<column name="last_update_date" property="lastUpdateDate" dataType="datetime" nullable="false" />
+			<column name="project_id" property="projectId" dataType="string" length="36" nullable="false" />
+			<column name="customer_id" property="customerId" dataType="string" length="36" nullable="false" />
+			
+			<column name="SERVICE_ID" property="serviceId" dataType="string" length="36" nullable="false"  />	
+			<column name="RESOURCE_ID" property="resourceId" dataType="string" length="36" nullable="false"  />	
+			<column name="DATA_ID" property="dataId" dataType="string" length="36" nullable="false"  />	
+		    <column name="IS_SUCCESS" property="isSuccess" description="是否发布成功" dataType="number" length="3" />
+		</columns>
+		<constraints>
+			<constraint type="PRIMARY_KEY">
+				<column name="id" />
+			</constraint>
+		</constraints>
+	</table>                         
+</mapping-configuration>  

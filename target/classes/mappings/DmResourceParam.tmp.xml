@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping-configuration>
+	 <table name="DM_RESOURCE_PARAMS" class="com.smartone.ddm.resource.entity.DmResourceParam" strict="true">
+		<columns>
+			<column name="id" property="id" dataType="string" length="36" />
+			<column name="create_user_id" property="createUserId" dataType="string" length="36" nullable="false" />
+			<column name="create_date" property="createDate" dataType="datetime" nullable="false" />
+			<column name="last_update_user_id" property="lastUpdateUserId" dataType="string" length="36" nullable="false" />
+			<column name="last_update_date" property="lastUpdateDate" dataType="datetime" nullable="false" />
+			<column name="project_id" property="projectId" dataType="string" length="36" nullable="false" />
+			<column name="customer_id" property="customerId" dataType="string" length="36" nullable="false" />
+			
+			<column name="param_name" property="paramName" description="参数名" dataType="string" length="30" nullable="false" />
+			<column name="old_param_name" property="oldParamName" description="旧参数名" dataType="string" length="30" />
+			<column name="is_nullable" property="isNullable" description="是否可为空"  dataType="number" length="1" />
+			<column name="is_unique" property="isUnique" description="是否唯一" dataType="number" length="1" />
+			<column name="is_validate" property="isValidate" description="是否验证"  dataType="number" length="1" />
+			<column name="default_value" property="defaultValue" description="默认值" dataType="nstring" length="50" />
+			<column name="order_code" property="orderCode" description="排序" dataType="number" length="3" />
+		    <column name="desc_name" property="descName" description="描述名"  dataType="nstring" length="25" />
+			<column name="datatype" property="datatype" description="数据类型" dataType="string" length="10" />
+			<column name="length" property="length" description="长度" dataType="number" length="20" nullable="true"/>
+			<column name="precision" property="precision" description="精度" dataType="number" length="10" />	
+		    <column name="param_type" property="paramType" description="参数类型（结果集，参数集）" dataType="number" length="1" />
+		    <column name="resource_id" property="resourceId" descriptionName="关联的资源id" dataType="string" length="36" />	
+		    <column name="inout" property="inout" description="输入输出" dataType="number" length="3" nullable="true"/>
+		</columns>
+		<constraints>
+			<constraint type="PRIMARY_KEY">
+				<column name="id" />
+			</constraint>
+		</constraints>
+		<validators>
+		    <validator name="PARAM_NAME" enableNotNull="true" enableDataType="true" />
+	    </validators>
+	</table>
+</mapping-configuration>  

@@ -1,0 +1,58 @@
+server:
+   max-http-header-size: 10000
+   port: 8201
+jdb:
+  orm:
+    default-jdb-orm-conf: jdb-orm.conf.xml
+    data-source-close-method-name: close
+    enable-redis-store-mapping: true
+    store-multi-data-source: true
+    
+spring:
+  redis:
+    host: localhost
+    port: 6379
+   
+  datasource:
+#         url: jdbc:sqlserver://192.168.1.111:1433;DatabaseName=test
+#         username: sa
+#         password: 123_abc
+#         url: jdbc:sqlserver://localhost:1433;DatabaseName=test
+#         username: sa
+#         password: 123123
+          url: jdbc:sqlserver://192.168.1.111:1433;DatabaseName=SmartOne2_suite
+          username: sa
+          password: 123_abc  
+          type: com.alibaba.druid.pool.DruidDataSource
+  application:
+     name: smartone2
+#    name: smartoneTest
+i18n:
+    enable-redis-store: true
+
+# 指定该服务要注册进指定url的服务注册中心   
+ibs:
+  parent:
+    filter:
+      enable-token-validate-filter: true
+      enable-log-filter: true 
+      enable-param-parser-filter: true
+    cors:
+      access-control-allow-methods: GET,POST,PUT,DELETE
+      access-control-allow-headers: Origin, X-Requested-With, Content-Type, Accept, _log, _token,token
+      access-control-max-age: 1800
+eureka:
+  client:
+    service-url:
+      defaultZone: http://192.168.1.111:8101/eureka/
+      
+com:
+  smartone:
+    login:
+      token:
+        maximum-number-request: 3
+        failure-duration: 1800
+        lock-duration: 900
+        not-filter-urls: /account/login,/account/loginout
+
+

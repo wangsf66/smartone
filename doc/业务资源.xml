@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping-configuration>
+	 <busimodel name="业务模型名称" oldname="">
+		<relations>
+			<relation refBusiModelName="关联的业务模型名称" 
+			          parentName="父级名称" 
+				  idPropName="资源的主键属性名" 
+				  refResourceType="关联的资源类型" 
+				  refResourceKeyName="关联的资源的key名"
+				  refParentResourcePropId="关联外键的属性名" 
+				  isCascadeDelete="是否级联删除" 
+				  orderCode="排序值" 
+				  refResourceName="关联资源名称">
+				  <childlist>
+					  <relation refBusiModelName="关联的业务模型名称" 
+						    parentName="父级名称" 
+						    idPropName="资源的主键属性名" 
+						    refResourceType="关联的资源类型" 
+						    refResourceKeyName="关联的资源的key名"
+						    refParentResourcePropId="关联外键的属性名" 
+						    isCascadeDelete="是否级联删除" 
+						    orderCode="排序值" 
+						    refResourceName="关联资源名称">
+						    <sqllist>
+						       <sql name ="sql资源名称" type="delete" oldName=""  sqlType = ""/>
+						       <sql name ="sql资源名称" type="update" oldName=""  sqlType = ""/>
+						       <sql name ="sql资源名称" type="insert" oldName=""  sqlType = ""/>
+						       <sql name ="sql资源名称" type="sele_dele" oldName=""  sqlType = ""/>
+						       <sql name ="sql资源名称" type="select" oldName=""  sqlType = ""/>
+						    </sqllist>
+						    <childlist>
+							    <relation refBusiModelName="关联的业务模型名称" 
+								      parentName="父级名称" 
+								      idPropName="资源的主键属性名" 
+								      refResourceType="关联的资源类型" 
+								      refResourceKeyName="关联的资源的key名"
+								      refParentResourcePropId="关联外键的属性名" 
+								      isCascadeDelete="是否级联删除" 
+								      orderCode="排序值" 
+								      refResourceName="关联资源名称">
+							    </relation>
+						    </childlist>
+				          </relation>
+				  </childlist>
+			</relation>
+		</relations>
+	</busimodel>
+</mapping-configuration>   

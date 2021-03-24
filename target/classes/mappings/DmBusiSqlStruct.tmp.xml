@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping-configuration>
+	 <table name="DM_SQL_BUSI_STRUCTURE" class="com.smartone.ddm.busimodel.entity.DmSqlBusiStructure" strict="true">
+		<columns>
+		    <column name="id" property="id" dataType="string" primaryKey="true" length="36" />
+			<column name="type" property="type" description="资源类型" dataType="string" length="10" />	
+			<column name="resource_id" property="resourceId" description="管理资源id"  dataType="string" length="36" />
+            <column name="parent_id" property="parentId" description="父级id"  dataType="string" length="36" />
+		</columns>
+		<constraints>
+			<constraint type="PRIMARY_KEY">
+				<column name="id" />
+			</constraint>
+		</constraints>
+	</table>
+</mapping-configuration>  

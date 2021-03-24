@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping-configuration>
+	 <table name="DM_CFG_BUSI_MODEL" class="com.smartone.ddm.busimodel.entity.DmBusiModel" strict="true">
+		<columns>
+		    <column name="id" property="id" dataType="string"  length="36" />
+			<column name="create_user_id" property="createUserId" dataType="string" length="36" nullable="false" />
+			<column name="create_date" property="createDate" dataType="datetime" nullable="false" />
+			<column name="last_update_user_id" property="lastUpdateUserId" dataType="string" length="36" nullable="false" />
+			<column name="last_update_date" property="lastUpdateDate" dataType="datetime" nullable="false" />
+			<column name="project_id" property="projectId" dataType="string" length="36" nullable="false" />
+			<column name="customer_id" property="customerId" dataType="string" length="36" nullable="false" />
+			
+			<column name="name" property="name" description="汉字描述名称" dataType="string" length="100" nullable="false"  />	
+			<column name="is_build_model" property="isBuildModel" description="是否建模"  dataType="number" length="1"   />
+			<column name="resource_name" property="resourceName" description="资源名称"  dataType="string" length="60" nullable="false"    />
+			<column name="remark" property="remark" description="备注"  dataType="string"  length="150" />
+		    <column name="module_id" property="moduleId" description="所属模块ID" dataType="string" length="36" />	
+		</columns>
+		<constraints>
+			<constraint type="PRIMARY_KEY">
+				<column name="id" />
+			</constraint>
+		</constraints>
+	</table>
+</mapping-configuration>  

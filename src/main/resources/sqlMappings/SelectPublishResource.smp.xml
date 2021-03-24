@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping-configuration>
+	<sql namespace="selectResourceList">	
+		<content name="selectPublishResource" type="select" >
+        	SELECT A.ID ,A.RESOURCE_NAME,A.CREATE_DATE,A.DESC_NAME,A.MODULE_ID,A.RESOURCE_TYPE,B.RESOURCE_ID,C.IS_SUCCESS,OBJECT_ID,B.STATE,(
+            CASE
+                WHEN (  B.STATE = 3 ) THEN 3
+				WHEN (  B.RESOURCE_ID is null ) THEN 2
+                WHEN (  B.RESOURCE_ID is not null ) THEN 1
+            END 
+			    ) AS IS_CHECKED,(
+            CASE
+                WHEN (  C.IS_SUCCESS = 2 ) THEN '发布失败'
+				WHEN (  C.IS_SUCCESS = 1 ) THEN '发布成功'
+                WHEN (  C.IS_SUCCESS is  null ) THEN '未发布'
+            END 
+			    ) AS IS_SUCCESS_DESC,(
+            CASE
+                WHEN (  B.STATE = 3  ) THEN '禁止发布'
+				WHEN (  B.RESOURCE_ID is null ) THEN '不可发布'
+                WHEN (  B.RESOURCE_ID is not null ) THEN '可发布'
+            END 
+			    ) AS IS_CHECKED_DESC FROM DM_RESOURCE A 
+			LEFT JOIN DM_RESOURCE_PUBLISH_TARGET B  ON A.ID = B.RESOURCE_ID and  B.OBJECT_ID = $objectId$
+			LEFT JOIN DM_PUBLISH_STATE C  ON A.ID = C.RESOURCE_ID
+			and  B.OBJECT_ID = $objectId$
+            <where>
+                 
+		        <if test="resourceName!= '' and resourceName!= null">
+		            and  A.RESOURCE_NAME like $resourceName$
+		        </if>
+		        <if test="moduleId!= '' and moduleId!= null">
+		            and  A.MODULE_ID  = $moduleId$
+		        </if>
+		        <if test="resourceType!= '' and resourceType!= null">
+		            and  A.RESOURCE_TYPE  = $resourceType$
+		        </if>
+			</where>
+			 and A.IS_BUILD_MODEL =1
+			 order by CREATE_DATE DESC
+		</content>
+		
+		<content name="selectMontageResources" type="select" >
+		   select * from DM_RESOURCE_PUBLISH_TARGET where OBJECT_ID = $id$ and STATE !=2 and RESOURCE_ID not in(select RESOURCE_ID from DM_PUBLISH_STATE where SERVICE_ID = $id$) order by ORDER_CODE
+		</content>
+		
+		<content name="selectChildServiceMontageResources" type="select" >
+		    select * from (
+			select * from DM_RESOURCE_PUBLISH_TARGET where OBJECT_ID = $id$ and STATE !=2 and RESOURCE_ID not in(
+			select RESOURCE_ID from DM_PUBLISH_STATE where SERVICE_ID = $id$
+			)
+			UNION
+			select * from DM_RESOURCE_PUBLISH_TARGET where OBJECT_ID = $pid$ and STATE !=2 and RESOURCE_ID not in(
+			select RESOURCE_ID from DM_PUBLISH_STATE where SERVICE_ID = $pid$
+			) and  RESOURCE_ID not in(select resource_id from DM_RESOURCE_PUBLISH_TARGET  where OBJECT_ID = $id$ and state=2)
+			) A
+			order by ORDER_CODE
+		</content>
+		
+		<content name="selectPreposeResource" type="select" >
+		   select * from DM_RESOURCE_PREPOSE WHERE resource_id in  
+		   <foreach collection="array" alias="resourceId" open="(" separator="," close=")" >
+		       $resourceId$
+           </foreach> 
+		</content>
+		
+		<content name="selectResources" type="select" >
+		   select * from DM_RESOURCE_PREPOSE WHERE resource_id in  
+		   <foreach collection="array" alias="resourceId" open="(" separator="," close=")" >
+		       $resourceId$
+           </foreach> 
+		</content>
+	</sql>
+</mapping-configuration>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<columns>
+	<column name="ID"  dataType="string" primaryKey="true" length="36" validate="true" />
+
+	<column name="CREATE_USER_ID"  dataType="string" length="36" nullable="false" />
+	<column name="CREATE_DATE"  dataType="datetime" nullable="false" />
+	<column name="LAST_UPDATE_USER_ID"  dataType="string" length="36" nullable="false" />
+	<column name="LAST_UPDATE_DATE"  dataType="datetime" nullable="false" />
+	<column name="PROJECT_ID"  dataType="string" length="36" nullable="false" />
+	<column name="CUSTOMER_ID"  dataType="string" length="36" nullable="false" />
+	<!-- <column name="CREATE_USER_NAME"  dataType="nstring" length="50" nullable="true" />
+    <column name="LAST_UPDATE_USER_NAME"  dataType="nstring" length="50" nullable="true" />
+    <column name="PROJECT_NAME"  dataType="nstring" length="150" nullable="true" />
+    <column name="CUSTOMER_NAME"  dataType="nstring" length="150" nullable="true" /> -->
+</columns>

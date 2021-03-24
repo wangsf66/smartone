@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping-configuration>
+	 <table name="DM_CFG_BUSI_MODEL_RES_RELATIONS" class="com.smartone.ddm.busimodel.entity.DmBusiModelRelation" strict="true">
+		<columns>
+		    <column name="id" property="id" dataType="string"  length="36" />
+			<column name="create_user_id" property="createUserId" dataType="string" length="36" nullable="false" />
+			<column name="create_date" property="createDate" dataType="datetime" nullable="false" />
+			<column name="last_update_user_id" property="lastUpdateUserId" dataType="string" length="36" nullable="false" />
+			<column name="last_update_date" property="lastUpdateDate" dataType="datetime" nullable="false" />
+			<column name="project_id" property="projectId" dataType="string" length="36" nullable="false" />
+			<column name="customer_id" property="customerId" dataType="string" length="36" nullable="false" />
+			
+			<column name="ref_busi_model_id" property="refBusiModelId" description="关联的业务模型id" dataType="string" length="36" nullable="false" />	
+			<column name="parent_id" property="parentId" description="父id"  dataType="string" length="36"  />
+			<column name="ref_resource_id" property="refResourceId" description="关联的资源id"  dataType="string" length="36" />
+			<column name="id_prop_name" property="idPropName" description="资源的主键属性名"  dataType="string" length="20"  />
+			<column name="ref_resource_type" property="refResourceType" description="关联的资源类型"   dataType="number" length="3"  nullable="false" />
+			<column name="ref_resource_key_name" property="refResourceKeyName" description="关联的资源的key名"  dataType="string" length="60"  />
+			<column name="ref_parent_resource_prop_id" property="refParentResourcePropId" description="关联外键的属性名"  dataType="string" length="36" />
+			<column name="is_cascade_delete" property="isCascadeDelete" description="是否级联删除"  dataType="number" length="1" />
+		    <column name="order_code" property="orderCode" description="排序值"  dataType="number" length="3" />
+		    <column name="ref_resource_name" property="refResourceName" description="关联资源名称"  dataType="string" length="60"  />
+		    <column name="ref_desc_name" property="refDescName" description="资源描述"  dataType="string" length="25"  />
+		</columns>
+		<constraints>
+			<constraint type="PRIMARY_KEY">
+				<column name="id" />
+			</constraint>
+		</constraints>
+	</table>
+</mapping-configuration>  

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration id="default-smartone2">
+	<environment>
+        <property name="globalCreateMode" value="dynamic" />
+        <mapping>
+            <sql parameterPrefix="$" parameterSuffix="$" parameterSplit="|" parameterDefaultValueHandler="com.smartone.ddm.util.SqlRescourceDefaultValue" />
+            <register class="com.smartone.ex.mapping.busimodel.BusiModelMappingType" />
+            <scanner path="mapper" scanAll="true"/>
+            <scanner path="mappings" scanAll="true"/>
+        </mapping>
+	</environment>
+</configuration>

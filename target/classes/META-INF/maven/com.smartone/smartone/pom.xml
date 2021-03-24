@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>com.ibs</groupId>
+		<artifactId>ibs-parent</artifactId>
+		<version>1.0.0.RELEASE</version>
+		<relativePath/>
+	</parent>
+	
+	<groupId>com.smartone</groupId>
+	<artifactId>smartone</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	
+	<name>smartone</name>
+
+	<dependencies>
+	    
+	     <dependency>
+             <groupId>commons-beanutils</groupId>
+             <artifactId>commons-beanutils</artifactId>
+             <version>1.9.0</version>
+         </dependency> 
+         <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+         </dependency>
+         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+         </dependency>
+         <dependency>
+			  <groupId>com.gudusoft</groupId>
+			  <artifactId>gsqlparser</artifactId>
+			  <version>1.0.0</version>
+		 </dependency>
+		 <dependency> 
+				<groupId>com.fasterxml.jackson.core</groupId> 
+				<artifactId>jackson-databind</artifactId> 
+		 </dependency>
+		 <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.10.1</version>
+        </dependency>
+        <dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.10-FINAL</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.shiro</groupId>
+		    <artifactId>shiro-core</artifactId>
+		    <version>1.4.0</version>
+       </dependency>
+       
+       <dependency>
+		    <groupId>commons-fileupload</groupId>
+		    <artifactId>commons-fileupload</artifactId>
+		    <version>1.4</version>
+       </dependency>
+       
+       <dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.6</version>
+		</dependency>
+       <dependency>
+       	<groupId>org.springframework.boot</groupId>
+       	<artifactId>spring-boot-configuration-processor</artifactId>
+       	<optional>true</optional>
+       </dependency>
+       <dependency>
+       	<groupId>org.springframework.boot</groupId>
+       	<artifactId>spring-boot-configuration-processor</artifactId>
+       	<optional>true</optional>
+       </dependency>
+       <dependency>
+	   <groupId>org.springframework.boot</groupId>
+	   <artifactId>spring-boot-starter-websocket</artifactId>
+	</dependency>
+	<dependency>
+	    <groupId>com.alibaba</groupId>
+	    <artifactId>fastjson</artifactId>
+	    <version>1.2.4</version>
+    </dependency>
+	</dependencies>
+	
+	
+	<distributionManagement>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<url>http://192.168.1.111:8001/repository/maven-snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>nexus-releases</id>
+			<url>http://192.168.1.111:8001/repository/maven-releases/</url>
+		</repository>
+	</distributionManagement>
+	
+	<build>
+		<plugins>
+			<!-- 要将源码放到nexus私服上时，需要加入这个插件 -->
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+				 	<attach>true</attach>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+</project>
