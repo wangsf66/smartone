@@ -265,11 +265,7 @@ public class MethodContext {
 			//递归查询
 			return recursiveMethod.getDatas();
 		}
-		if(recursiveMethod==null) {
-			//普通查询
-			return routineQueryMethod.getDatas();
-		}
-		return null;
+		return routineQueryMethod.getDatas();
 	}
 	
 	public Object getBusiDatas(Session session) {

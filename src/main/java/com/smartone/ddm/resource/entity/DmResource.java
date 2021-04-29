@@ -31,7 +31,7 @@ public class DmResource extends BasicEntity{
  	 
  	 private boolean isSelectSql = false;
  	 
- 	 private int isStopUsing = 0;
+ 	 //private int isStopUsing = 0;
  	 
  	 private int isEverBuildModel;
  	 
@@ -51,12 +51,12 @@ public class DmResource extends BasicEntity{
 	public void setServiceInfoId(String serviceInfoId) {
 		this.serviceInfoId = serviceInfoId;
 	}
-	public int getIsStopUsing() {
-		return isStopUsing;
-	}
-	public void setIsStopUsing(int isStopUsing) {
-		this.isStopUsing = isStopUsing;
-	}
+//	public int getIsStopUsing() {
+//		return isStopUsing;
+//	}
+//	public void setIsStopUsing(int isStopUsing) {
+//		this.isStopUsing = isStopUsing;
+//	}
 	public boolean isSelectSql() {
 		return isSelectSql;
 	}

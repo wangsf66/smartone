@@ -23,7 +23,7 @@
 		    <column name="support_delete" property="supportDelete" description="是否可以被删除" dataType="number" length="1" />	
 		    <column name="support_cover" property="supportCover" description="是否可以被覆盖" dataType="number" length="1" />
 		    <column name="IS_EVER_BUILD_MODEL" property="isEverBuildModel" description="曾经是否建模" dataType="number" length="1" nullable="false" />
-		    <column name="is_stop_using" property="isStopUsing" description="资源是否被停用" dataType="number" length="1" />
+		    <!--  <column name="is_stop_using" property="isStopUsing" description="资源是否被停用" dataType="number" length="1" /> -->
 		</columns>
 		<constraints>
 			<constraint type="PRIMARY_KEY">

@@ -8,16 +8,12 @@ import org.springframework.stereotype.Component;
 
 import com.smartone.ddm.busimodel.entity.DmBusiModelRelation;
 import com.smartone.ddm.busimodel.entity.DmSqlBusiStructure;
-import com.smartone.ddm.resource.entity.DmDataPublishTarget;
-import com.smartone.ddm.resource.entity.DmPublishTableData;
 import com.smartone.ddm.resource.entity.DmResource;
 import com.smartone.ddm.resource.entity.DmResourceMapping;
 import com.smartone.ddm.resource.entity.DmResourceParam;
-import com.smartone.ddm.resource.entity.DmService;
 
 
 @Component
-//@Configuration
 public class IsBuiltInResource {
     
 	@SuppressWarnings("rawtypes")
@@ -25,9 +21,6 @@ public class IsBuiltInResource {
 	
 	@Bean
 	public void myBean() {
-		builtInResourceReg("DM_PUBLISH_TABLE_DATA",DmPublishTableData.class);
-		builtInResourceReg("DM_SERVICE",DmService.class);
-		builtInResourceReg("DM_DATA_PUBLISH_TARGET",DmDataPublishTarget.class);
 		builtInResourceReg("DM_RESOURCE",DmResource.class);
 		builtInResourceReg("DM_CFG_BUSI_MODEL_RES_RELATIONS",DmBusiModelRelation.class);
 		builtInResourceReg("DM_RESOURCE_PARAMS",DmResourceParam.class);

@@ -14,6 +14,7 @@ import com.douglei.orm.context.SessionContext;
 import com.douglei.orm.context.SessionFactoryContainer;
 import com.douglei.orm.context.SimpleSessionContext;
 import com.douglei.orm.context.Transaction;
+import com.douglei.orm.context.TransactionComponent;
 import com.douglei.orm.mapping.Mapping;
 import com.douglei.orm.mapping.MappingProperty;
 import com.douglei.orm.mapping.handler.MappingHandleException;
@@ -44,6 +45,7 @@ import com.smartone.ex.mapping.busimodel.metadata.SqlMetadata;
  * 
  * @author wangShuFang
  */
+@TransactionComponent
 public class DmCfgBusiModelService extends BasicService {
 	
 	public static final String STATE = "$state$";
@@ -192,7 +194,7 @@ public class DmCfgBusiModelService extends BasicService {
 				dsbsResultList = (List<Map<String,Object>>)methodContext.getBusiDatas(session);
 				dsbsResultMap.put(relation.getRefResourceKeyName(),dsbsResultList);
 				if(dsbsResultList!=null&&dsbsResultList.size()>0) {
-					querychildReportForm(dsbsResultList,session,relation,map); 
+					querychildReportForm(dsbsResultList,session,relation,map,dsbsResultMap); 
 			    }
 			}else{
 				dsbsList = relation.getSqlList();
@@ -211,7 +213,7 @@ public class DmCfgBusiModelService extends BasicService {
 						dsbsResultList = (List<Map<String,Object>>)methodContext.getBusiDatas(session);
 						dsbsResultMap.put(relation.getRefResourceKeyName(), dsbsResultList);
 						if (dsbsResultList!=null&&dsbsResultList.size()>0) {
-							querychildReportForm(dsbsResultList,session,relation,map);
+							querychildReportForm(dsbsResultList,session,relation,map,dsbsResultMap);
 					    }
 					 }
 				   }
@@ -223,7 +225,7 @@ public class DmCfgBusiModelService extends BasicService {
 	
 	@SuppressWarnings("unchecked")
 	private void querychildReportForm(List<Map<String, Object>> dsbsResultList, Session session,
-			RelationMetadata relation,Map<String, Object> map) {
+			RelationMetadata relation,Map<String, Object> map, Map<String, List<Map<String, Object>>> dsbsResultMap) {
 		MethodContext methodContext  = null;
 		List<Map<String,Object>> dsbsChildList = null;
 		Map<String, Object> tempMap = new HashMap<String, Object>();
@@ -246,18 +248,18 @@ public class DmCfgBusiModelService extends BasicService {
 					    //将上一层的隐形条件放到下一层中
 						childMap.put(childRelation.getRefParentResourcePropId(),childmap.get(childRelation.getIdPropName()));
 					if((ResourceTypeUtil.RESOURCE_TYPE_TABLE+"").equals(childRelation.getRefResourceType())) {
-						methodContext = new MethodContext(returnMap(tempMap,childMap,childRelation.getRefResourceKeyName()),returnSortMap(builtinTempMap,map,childRelation.getRefResourceKeyName()),childRelation.getRefResourceName());
+						methodContext = new MethodContext(returnMap(tempMap,map,childRelation.getRefResourceKeyName()),returnSortMap(builtinTempMap,map,childRelation.getRefResourceKeyName()),childRelation.getRefResourceName());
 						dsbsChildList = (List<Map<String,Object>>)methodContext.getBusiDatas(session);
-						childmap.put(childRelation.getRefResourceKeyName(),dsbsChildList);
+						dsbsResultMap.put(childRelation.getRefResourceKeyName(),dsbsChildList);
 					}else {
 						dsbsList = childRelation.getSqlList();
 						if(dsbsList!=null&&dsbsList.size()>0){
 						for(SqlMetadata sqlMetadata:dsbsList) {
 							if(sqlMetadata.getType().equals(SELECT)) {
 								ExecutableSqlEntity es = mappingHandler.getExecutableSqlEntity(QueryPurposeEntity.getSingleton(), sqlMetadata.getName(), null,returnMap(tempMap,childMap));
-								methodContext = new MethodContext(returnMap(tempMap,childMap,childRelation.getRefResourceKeyName()),returnSortMap(builtinTempMap,map,childRelation.getRefResourceKeyName()),es);
+								methodContext = new MethodContext(returnMap(tempMap,map,childRelation.getRefResourceKeyName()),returnSortMap(builtinTempMap,map,childRelation.getRefResourceKeyName()),es);
 								dsbsChildList = (List<Map<String,Object>>)methodContext.getBusiDatas(session);
-								childmap.put(childRelation.getRefResourceKeyName(), dsbsChildList);
+								dsbsResultMap.put(childRelation.getRefResourceKeyName(), dsbsChildList);
 							 }
 						  }
 					    }

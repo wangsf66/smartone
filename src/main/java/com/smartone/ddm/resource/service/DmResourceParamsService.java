@@ -1,9 +1,12 @@
 package com.smartone.ddm.resource.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.douglei.orm.context.SessionContext;
 import com.douglei.orm.context.Transaction;
+import com.douglei.orm.context.TransactionComponent;
 import com.douglei.orm.mapping.validator.ValidateFailResult;
 import com.douglei.orm.sessionfactory.sessions.Session;
 import com.ibs.code.result.DataValidationResult;
@@ -25,6 +28,7 @@ import com.smartone.ddm.resource.validation.TableNothingValidationResult;
  * 
  * @author wangShuFang
  */
+@TransactionComponent
 public class DmResourceParamsService extends BasicService {
 	
 	private static final ResourceUniqueValidator resourceUniqueValidator = new ResourceUniqueValidator();
@@ -100,10 +104,21 @@ public class DmResourceParamsService extends BasicService {
 			//当参数列名等信息发生变化时，修改所属表的建模状态
 			dmResource.setIsBuildModel(0);
 		}
-		SessionContext.getTableSession().update(setBasicPropertyValues(dmResource,false));
 		SessionContext.getTableSession().update(setBasicPropertyValues(dmResourceParams,false));
+		SessionContext.getTableSession().update(setBasicPropertyValues(dmResource,false));
 		cancelmodel(dmResource);
 	}
+	
+	@Transaction
+	public Map<String,List<DmResourceParam>> queryParamByResourceId(String resourceId) {
+		Map<String,List<DmResourceParam>> params = new HashMap<String,List<DmResourceParam>>();
+		List<DmResourceParam> resultSet = SessionContext.getSqlSession().query(DmResourceParam.class, "select * FROM DM_RESOURCE_PARAMS WHERE PARAM_TYPE=1");
+		List<DmResourceParam> parameterSet = SessionContext.getSqlSession().query(DmResourceParam.class, "select * FROM DM_RESOURCE_PARAMS WHERE PARAM_TYPE=0");
+		params.put("resultSet", resultSet);
+		params.put("parameterSet", parameterSet);
+		return params;
+	}
+	
 	
 
 	@Transaction
@@ -121,10 +136,14 @@ public class DmResourceParamsService extends BasicService {
 	public void cancelmodel(DmResource dmResource){
 		//修改mapping为失效，table不可以从容器中移除
 		SessionContext.getSqlSession().executeUpdate("update DM_RESOURCE_MAPPING set IS_FAILURE=1 where RESOURCE_ID = '"+dmResource.getId()+"'");
-		DmResource dmBusiResource = SessionContext.getTableSession().uniqueQuery(DmResource.class,"select * from DM_RESOURCE where id  in(select REF_BUSI_MODEL_ID from DM_CFG_BUSI_MODEL_RES_RELATIONS where REF_RESOURCE_ID='"+dmResource.getId()+"')");
-	    if(dmBusiResource!=null&&dmBusiResource.getIsBuildModel()==1) {
-	    	dmBusiResource.setIsBuildModel(0);
-	    	SessionContext.getTableSession().update(setBasicPropertyValues(dmBusiResource,false));
+		List<DmResource> dmBusiResourceList = SessionContext.getTableSession().query(DmResource.class,"select * from DM_RESOURCE where id  in(select REF_BUSI_MODEL_ID from DM_CFG_BUSI_MODEL_RES_RELATIONS where REF_RESOURCE_ID='"+dmResource.getId()+"')");
+	    if(dmBusiResourceList!=null&&dmBusiResourceList.size()>0) {
+	    	for(DmResource dmBusiResource:dmBusiResourceList) {
+	    		if(dmBusiResource.getIsBuildModel()==1) {
+	    	    	dmBusiResource.setIsBuildModel(0);
+	    	    	SessionContext.getTableSession().update(setBasicPropertyValues(dmBusiResource,false));
+	    	    }
+	    	}
 	    }
 	}
 }
@@ -234,5 +253,5 @@ class ResourceParamValidator implements ServiceValidator<DmResourceParam> {
 		    	}
 		    }
 			return null;
-	}
+	  }
 }

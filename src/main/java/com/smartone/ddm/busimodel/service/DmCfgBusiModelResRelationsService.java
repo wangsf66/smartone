@@ -7,6 +7,7 @@ import java.util.Map;
 import com.douglei.orm.context.SessionContext;
 import com.douglei.orm.context.SessionFactoryContainer;
 import com.douglei.orm.context.Transaction;
+import com.douglei.orm.context.TransactionComponent;
 import com.douglei.orm.mapping.handler.MappingHandleException;
 import com.douglei.orm.mapping.handler.MappingHandler;
 import com.douglei.orm.mapping.handler.entity.DeleteMappingEntity;
@@ -20,6 +21,7 @@ import com.smartone.ddm.util.ResourceTypeUtil;
  * 
  * @author wangShuFang
  */
+@TransactionComponent
 public class DmCfgBusiModelResRelationsService extends BasicService{
 	
 	

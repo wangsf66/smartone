@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,6 +11,7 @@ import com.douglei.orm.configuration.environment.EnvironmentContext;
 import com.douglei.orm.context.SessionContext;
 import com.douglei.orm.context.SessionFactoryContainer;
 import com.douglei.orm.context.Transaction;
+import com.douglei.orm.context.TransactionComponent;
 import com.douglei.orm.dialect.DatabaseType;
 import com.douglei.orm.mapping.MappingTypeNameConstants;
 import com.douglei.orm.mapping.handler.MappingHandleException;
@@ -24,7 +23,6 @@ import com.ibs.components.response.ResponseContext;
 import com.smartone.ddm.resource.entity.DmResource;
 import com.smartone.ddm.resource.entity.DmResourceMapping;
 import com.smartone.ddm.resource.entity.DmResourceParam;
-import com.smartone.ddm.resource.entity.DmResourcePublishTarget;
 import com.smartone.ddm.resource.entity.ProcedureParameter;
 import com.smartone.ddm.resource.entity.Resource;
 import com.smartone.ddm.resource.entity.SqlStatementTypeConstants;
@@ -35,8 +33,6 @@ import com.smartone.ddm.util.ResourceTypeUtil;
 import com.smartone.ddm.util.StrUtil;
 import com.smartone.ex.mapping.ExMappingTypeConstants;
 
-import gudusoft.gsqlparser.EDbVendor;
-import gudusoft.gsqlparser.ESqlStatementType;
 import gudusoft.gsqlparser.TCustomSqlStatement;
 import gudusoft.gsqlparser.TGSqlParser;
 import gudusoft.gsqlparser.TStatementList;
@@ -46,7 +42,7 @@ import gudusoft.gsqlparser.stmt.mssql.TMssqlCreateProcedure;
  * 
  * @author wangShuFang
  */
-//@TransactionComponent
+@TransactionComponent
 public class DmResourceService extends BasicService{
 	
 
@@ -80,18 +76,21 @@ public class DmResourceService extends BasicService{
 		    return;
 		}
 		if (doValidate(dmResource)) {
-			TGSqlParser parser = new TGSqlParser(getDialect());
+			TGSqlParser parser = new TGSqlParser(StrUtil.getDialect());
 			//TODO 修改返回值 isSelectSql 
 			if(sqlParser(dmResource,parser)) {
 				dmResource.setIsBuildModel(0);
 				//解析参数
 				if(dmResource.getResourceType() == ResourceTypeUtil.RESOURCE_TYPE_PROCEDURE) {
 					saveProcedureResourceParams(dmResource,parser);
+					SessionContext.getTableSession().save(setBasicPropertyValues(dmResource,true));
+					ResponseContext.addData(dmResource);
 				}else {
-				    saveResourceParams(dmResource,parser);
+					if(saveResourceParams(dmResource,parser)) {
+						SessionContext.getTableSession().save(setBasicPropertyValues(dmResource,true));
+						ResponseContext.addData(dmResource);
+					}
 				}
-				SessionContext.getTableSession().save(setBasicPropertyValues(dmResource,true));
-				ResponseContext.addData(dmResource);
 			}
 		}
 	}
@@ -178,7 +177,6 @@ public class DmResourceService extends BasicService{
 		for(ProcedureParameter pc:parameterList) {
 			sort++;
 			dmResourceParam = new DmResourceParam(pc.getParameterName(),pc.getDataType(),pc.getLength(),pc.getDefaultValue(),pc.getPrecision(),sort,dmResource.getId(),0,pc.getInout());
-			//saveParam(dmResourceParam);
 			SessionContext.getTableSession().save(setBasicPropertyValues(dmResourceParam, true));
 		}
 	}
@@ -197,7 +195,6 @@ public class DmResourceService extends BasicService{
 			if (paramsList != null) {
 				List<DmResourceParam> sqlParamsSets = (List<DmResourceParam>) paramsList;
 				for (DmResourceParam dsp : sqlParamsSets) {
-					//saveParam(dsp);
 					SessionContext.getTableSession().save(setBasicPropertyValues(dsp, true));
 				}
 			}else {
@@ -206,7 +203,6 @@ public class DmResourceService extends BasicService{
 			if (resultList != null) {
 				List<DmResourceParam> sqlResultSets = (List<DmResourceParam>) resultList;
 				for (DmResourceParam dsp : sqlResultSets) {
-					//saveParam(dsp);
 					SessionContext.getTableSession().save(setBasicPropertyValues(dsp, true));
 				}
 			}else {
@@ -217,7 +213,6 @@ public class DmResourceService extends BasicService{
 			if (paramsList != null) {
 				List<DmResourceParam> sqlParamsSets = (List<DmResourceParam>) paramsList;
 				for (DmResourceParam dsp : sqlParamsSets) {
-					//saveParam(dsp);
 					SessionContext.getTableSession().save(setBasicPropertyValues(dsp, true));
 				}
 			}else {
@@ -228,14 +223,6 @@ public class DmResourceService extends BasicService{
 	}
 	
 	
-	private void saveParam(DmResourceParam dsp) {
-		DmResourceParam param = SessionContext.getSqlSession().uniqueQuery(DmResourceParam.class,"select * from DM_RESOURCE_PARAMS where RESOURCE_ID='"+dsp.getResourceId()+"' and param_name='"+dsp.getParamName()+"' and param_type="+dsp.getParamType()+"");
-		if(param==null) {
-			SessionContext.getTableSession().save(setBasicPropertyValues(dsp, true));
-		}else {
-			SessionContext.getTableSession().update(setBasicPropertyValues(dsp, false));
-		}
-	}
 	
 	private boolean sqlParser(DmResource dmResource,TGSqlParser parser) {
 		 String sqlcontent = dmResource.getContent();
@@ -247,36 +234,15 @@ public class DmResourceService extends BasicService{
 		 }
 	    TStatementList list = parser.sqlstatements;
 	    //存储过程
-		if(transType(list.get(0).sqlstatementtype)==6){
+		if(SqlStatementTypeConstants.transType(list.get(0).sqlstatementtype)==6){
 			//如果是存储过程，就修改RESOURCE_TYPE
-			dmResource.setResourceType(ResourceTypeUtil.RESOURCE_TYPE_PROCEDURE);
-		}else if(transType(list.get(0).sqlstatementtype)==1) {
+			dmResource.setResourceType(ResourceTypeUtil.RESOURCE_TYPE_PROCEDURE); 
+		}else if(SqlStatementTypeConstants.transType(list.get(0).sqlstatementtype)==1) {
 			dmResource.setSelectSql(true);
 		}
 		return true;
-	}
+	 }
 	
-	public int transType(ESqlStatementType sqlStatementType) {
-		switch(sqlStatementType){
-        case sstselect:
-           return SqlStatementTypeConstants.SELECT;
-        case sstupdate:
-           return  SqlStatementTypeConstants.UPDATE;
-        case sstinsert:
-            return  SqlStatementTypeConstants.INSERT;
-        case sstdelete:
-            return  SqlStatementTypeConstants.DELETE;
-        case sstplsql_createprocedure:
-            return  SqlStatementTypeConstants.PROCEDURE;
-        case sstmssqlcreateprocedure:
-        	return  SqlStatementTypeConstants.PROCEDURE;
-        case sstcreateview:
-        	return  SqlStatementTypeConstants.VIEW;
-        default:
-        	return  SqlStatementTypeConstants.DECLARE;
-       }
-		
-	}
 	
 	  @Transaction
 	  public void delete(String ids) {
@@ -285,11 +251,6 @@ public class DmResourceService extends BasicService{
 		for (DmResource dmResource : list) {
 			if (dmResource.getIsBuildModel() == 1) {
 				ResponseContext.addValidationFull(dmResource, "id", "资源已建模，请取消建模后再做删除操作","smartone.dynamic.resource.CancelModel");
-				return;
-			}
-			List<DmResourcePublishTarget> resourcePublishList = SessionContext.getSqlSession().query(DmResourcePublishTarget.class, "select * from RESOURCE_PUBLISH_TARGET where RESOURCE_ID='"+dmResource.getId()+"'");
-			if(resourcePublishList!=null&&resourcePublishList.size()>0) {
-				ResponseContext.addValidation("id为%s的资源以发布到其他系统，不可被删除", null, dmResource.getId());
 				return;
 			}
 			if (dmResource.getResourceType() == ResourceTypeUtil.RESOURCE_TYPE_TABLE) {
@@ -346,7 +307,7 @@ public class DmResourceService extends BasicService{
 			//修改时删除sql参数重新解析
 			SessionContext.getSqlSession().executeUpdate(
 					"delete from DM_RESOURCE_PARAMS where resource_id = '" + OldDmResource.getId() + "'");
-			TGSqlParser parser = new TGSqlParser(getDialect());
+			TGSqlParser parser = new TGSqlParser(StrUtil.getDialect());
 			// 解析sql语句
 			if (sqlParser(dmResource,parser)) {
 				// 如果name相同，直接保存，不同时需要在数据库查询新的name对应的数组，数组大小大于0，表示有同名的sql名称，验证错误，数组大小小于0，则数据库中并没有同名的sname，保存
@@ -361,7 +322,7 @@ public class DmResourceService extends BasicService{
 								"smartone.resource.insert.uniqueResourceName");
 						return;
 					}
-					//TODO资源存在（资源已见过模且资源表中没有删除该资源）的情况下只要oldname为null就记录oldname
+					//TODO 资源存在（资源已见过模且资源表中没有删除该资源）的情况下只要oldname为null就记录oldname
 					if(OldDmResource.getIsEverBuildModel()==1&&OldDmResource.getOldResourceName()==null) {
 						dmResource.setOldResourceName(OldDmResource.getResourceName());
 					}
@@ -370,19 +331,11 @@ public class DmResourceService extends BasicService{
 			    //解析sql参数
 				if(dmResource.getResourceType() == ResourceTypeUtil.RESOURCE_TYPE_PROCEDURE) {
 					saveProcedureResourceParams(dmResource,parser);
+					saveResource(OldDmResource,dmResource);
 				}else {
-				    saveResourceParams(dmResource,parser);
-				}
-				dmResource.setIsEverBuildModel(OldDmResource.getIsEverBuildModel());
-				dmResource.setIsBuildModel(0);
-				SessionContext.getTableSession().update(setBasicPropertyValues(dmResource,false));
-				ResponseContext.addData(dmResource);
-			}
-			if(OldDmResource.getIsBuildModel()==1) {
-				try {
-					cancelmodel(OldDmResource);
-				} catch (MappingHandleException e) {
-					e.printStackTrace();
+					if(saveResourceParams(dmResource,parser)) {
+						saveResource(OldDmResource,dmResource);
+					}
 				}
 			}
 		} else {
@@ -390,6 +343,20 @@ public class DmResourceService extends BasicService{
 			dmResource.setResourceType(OldDmResource.getResourceType());
 			SessionContext.getTableSession().update(setBasicPropertyValues(dmResource,false));
 			ResponseContext.addData(dmResource);
+		}
+	}
+	
+	private void saveResource(DmResource OldDmResource,DmResource dmResource) {
+		dmResource.setIsEverBuildModel(OldDmResource.getIsEverBuildModel());
+		dmResource.setIsBuildModel(0);
+		SessionContext.getTableSession().update(setBasicPropertyValues(dmResource,false));
+		ResponseContext.addData(dmResource);
+		if(OldDmResource.getIsBuildModel()==1) {
+			try {
+				cancelmodel(OldDmResource);
+			} catch (MappingHandleException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -414,21 +381,21 @@ public class DmResourceService extends BasicService{
 				dmResource.setIsBuildModel(0);
 				SessionContext.getTableSession().update(setBasicPropertyValues(dmResource, false));
 				ResponseContext.addData(dmResource);
-			}
-			if(oldDmResource.getIsBuildModel()==1) {
-				try {
-					cancelmodel(oldDmResource);
-				} catch (MappingHandleException e) {
-					e.printStackTrace();
+				if(oldDmResource.getIsBuildModel()==1) {
+					try {
+						cancelmodel(oldDmResource);
+					} catch (MappingHandleException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
 	}
 	
+	//数据修改接口
 	@Transaction
-	public void createModel() {
-		List<DmResource> list = SessionContext.getTableSession().query(DmResource.class,"select * from DM_RESOURCE where IS_BUILD_MODEL = 1 and RESOURCE_TYPE = 15 ");
-		TGSqlParser parser = new TGSqlParser(getDialect());
+	public void createModel() {		List<DmResource> list = SessionContext.getTableSession().query(DmResource.class,"select * from DM_RESOURCE where IS_BUILD_MODEL = 1 and RESOURCE_TYPE = 15 ");
+		TGSqlParser parser = new TGSqlParser(StrUtil.getDialect());
 		for(DmResource dmResource:list) {
 			createSqlModel(dmResource,parser);
 	    	//createTableModel(dmResource);
@@ -445,23 +412,12 @@ public class DmResourceService extends BasicService{
 	    if(dmResource.getResourceType()==ResourceTypeUtil.RESOURCE_TYPE_TABLE) {
 			createTableModel(dmResource);
 		}else {
-			TGSqlParser parser = new TGSqlParser(getDialect());
+			TGSqlParser parser = new TGSqlParser(StrUtil.getDialect());
 			createSqlModel(dmResource,parser);
 		}	
 	}
 	
 	
-	private EDbVendor getDialect() {
-		switch(EnvironmentContext.getEnvironment().getDialect().getDatabaseType()) {
-		   case MYSQL:
-			   return EDbVendor.dbvmysql;
-		   case ORACLE:
-			   return EDbVendor.dbvoracle;
-		   case SQLSERVER:
-			   return EDbVendor.dbvmssql;
-		}
-		throw new NullPointerException();
-	}
 	
 	
 	public String transTypeToString(int a) {
@@ -536,7 +492,7 @@ public class DmResourceService extends BasicService{
 				SessionContext.getTableSession().save(setBasicPropertyValues(dmResourceMapping, true));
 			}
 			SessionContext.getSqlSession().executeUpdate("update DM_RESOURCE_PARAMS SET OLD_PARAM_NAME  = null  where RESOURCE_ID='" + dmResource.getId() + "'");
-			SessionContext.getSqlSession().executeUpdate("update DM_RESOURCE SET OLD_RESOURCE_NAME = null,IS_BUILD_MODEL=1,IS_STOP_USING=0,IS_EVER_BUILD_MODEL=1 where ID='" + dmResource.getId()+ "'");
+			SessionContext.getSqlSession().executeUpdate("update DM_RESOURCE SET OLD_RESOURCE_NAME = null,IS_BUILD_MODEL=1,IS_EVER_BUILD_MODEL=1 where ID='" + dmResource.getId()+ "'");
 			Map<String, Object> idsMap = new HashMap<String, Object>();
 			idsMap.put("id", dmResource.getId());
 			idsMap.put("msg", "建模成功");
@@ -556,7 +512,7 @@ public class DmResourceService extends BasicService{
 	public void procedureCreateSqlModel(DmResource dmResource) {
 		MappingHandler handler= SessionFactoryContainer.getSingleton().get().getMappingHandler();
 		List<Resource> resourceList = ResourceContentService.getResourceContent(dmResource.getId());
-		String  procedureXml = null;
+		String procedureXml = null;
 		String createprocedureXml = null;
 		for(Resource resource:resourceList) {
 			if(ProcedureSqlType.CALL.equals(resource.getSqlType())) {
@@ -579,7 +535,7 @@ public class DmResourceService extends BasicService{
 				SessionContext.getTableSession().save(setBasicPropertyValues(createDmResourceMapping,true));
 			}
 			SessionContext.getSqlSession().executeUpdate("update DM_RESOURCE SET OLD_RESOURCE_NAME = null,IS_BUILD_MODEL=1,IS_EVER_BUILD_MODEL=1 where ID='" + dmResource.getId()+ "'");
-			dmResource.setResourceName(resourceList.get(0).getNameSpace());
+			//dmResource.setResourceName(resourceList.get(0).getNameSpace());
 			Map<String,Object> idsMap = new HashMap<String,Object>();
 			idsMap.put("id", dmResource.getId());
 			idsMap.put("msg", "建模成功");
@@ -616,8 +572,12 @@ public class DmResourceService extends BasicService{
 		idsMap.put("msg", "取消建模成功");
 		ResponseContext.addData(idsMap);
 	    }catch (MappingHandleException e) {
-			e.printStackTrace();
-			ResponseContext.addError(dmResource, e);
+	    	Exception exc = (Exception)e.getCause();
+			if(exc.getMessage()!=null) {
+				ResponseContext.addValidationFull(dmResource, "id",exc.getMessage(),null);
+			}else {
+				ResponseContext.addError(dmResource,e);
+			}
 			SessionContext.executeRollback();
 		}
 	}
@@ -648,7 +608,7 @@ public class DmResourceService extends BasicService{
 	
 	
 	public boolean doValidate(DmResource dmResource) {
-        if(isContainChinese(dmResource.getResourceName())) {
+        if(StrUtil.isContainChinese(dmResource.getResourceName())) {
         	ResponseContext.addValidationFull(dmResource, "resourceName", "资源名不可以为汉字","smartone.resource.insert.resourceNameIsContainChinese");
 			return false;
 		}
@@ -665,14 +625,7 @@ public class DmResourceService extends BasicService{
 		return true;
 	}
 	
-	public static boolean isContainChinese(String str) {
-    	Pattern p = Pattern.compile("[\u4e00-\u9fa5]");
-         Matcher m = p.matcher(str);
-         if (m.find()) {
-            return true;
-         }
-         return false;
-	}
+	
 	
 	
 	@Transaction 
@@ -698,8 +651,3 @@ public class DmResourceService extends BasicService{
 	    ResponseContext.addData(dmResourceMapping);
 	}
 }
-
-
-	
-
-

@@ -19,10 +19,9 @@ import com.smartone.ddm.resource.entity.SqlStatementTypeConstants;
 import com.smartone.ddm.util.ProcedurePrefixUtil;
 import com.smartone.ddm.util.ProcedureSqlType;
 import com.smartone.ddm.util.ResourceTypeUtil;
+import com.smartone.ddm.util.StrUtil;
 import com.smartone.ex.mapping.ExMappingTypeConstants;
 
-import gudusoft.gsqlparser.EDbVendor;
-import gudusoft.gsqlparser.ESqlStatementType;
 import gudusoft.gsqlparser.TGSqlParser;
 import gudusoft.gsqlparser.TStatementList;
 
@@ -206,63 +205,31 @@ public class ResourceContentService{
 		return busiModelXml.toString();
 	}
 		
-	private EDbVendor getDialect() {
-		switch(EnvironmentContext.getEnvironment().getDialect().getDatabaseType()) {
-		   case MYSQL:
-			   return EDbVendor.dbvmysql;
-		   case ORACLE:
-			   return EDbVendor.dbvoracle;
-		   case SQLSERVER:
-			   return EDbVendor.dbvmssql;
-		}
-		throw new NullPointerException();
-	}
 	
 	private List<DmSqlContent> analysisSqllist(DmResource dmResource) {
     	List<DmSqlContent> sqlList = new ArrayList<DmSqlContent>();
-    	TGSqlParser parser = new TGSqlParser(getDialect());
+    	TGSqlParser parser = new TGSqlParser(StrUtil.getDialect());
     	parser.sqltext = dmResource.getContent();
 	    TStatementList list = parser.sqlstatements;
 	    parser.parse();
 	    DmSqlContent dmSqlContent  = null;
 	    //代码块
-		if(transType(list.get(0).sqlstatementtype)==7) {
+		if(SqlStatementTypeConstants.transType(list.get(0).sqlstatementtype)==7) {
 			dmSqlContent = new DmSqlContent(dmResource.getId(),dmResource.getContent(),EnvironmentContext.getEnvironment().getDialect().getDatabaseType().getName(),7);
 			sqlList.add(dmSqlContent);
 			//查询
-		}else if(transType(list.get(0).sqlstatementtype)==1) {
+		}else if(SqlStatementTypeConstants.transType(list.get(0).sqlstatementtype)==1) {
 			dmSqlContent = new DmSqlContent(dmResource.getId(),dmResource.getContent(),EnvironmentContext.getEnvironment().getDialect().getDatabaseType().getName(),1);
 			sqlList.add(dmSqlContent);
 		}else {
 			while(list.hasNext()){
-				dmSqlContent = new DmSqlContent(dmResource.getId(),list.next().toString(),EnvironmentContext.getEnvironment().getDialect().getDatabaseType().getName(),transType(list.next().sqlstatementtype));
+				dmSqlContent = new DmSqlContent(dmResource.getId(),list.next().toString(),EnvironmentContext.getEnvironment().getDialect().getDatabaseType().getName(),SqlStatementTypeConstants.transType(list.next().sqlstatementtype));
 				sqlList.add(dmSqlContent);
 			}
 		} 
 		return sqlList;
     }
     
-    public int transType(ESqlStatementType sqlStatementType) {
-		switch(sqlStatementType){
-        case sstselect:
-           return SqlStatementTypeConstants.SELECT;
-        case sstupdate:
-           return  SqlStatementTypeConstants.UPDATE;
-        case sstinsert:
-            return  SqlStatementTypeConstants.INSERT;
-        case sstdelete:
-            return  SqlStatementTypeConstants.DELETE;
-        case sstplsql_createprocedure:
-            return  SqlStatementTypeConstants.PROCEDURE;
-        case sstmssqlcreateprocedure:
-        	return  SqlStatementTypeConstants.PROCEDURE;
-        case sstcreateview:
-        	return  SqlStatementTypeConstants.VIEW;
-        default:
-        	return  SqlStatementTypeConstants.DECLARE;
-       }
-	}
-	
 	private void analysisSqlServerProcedure(DmResource dmResource,Resource resource,Resource proResource) {
 		List<DmResourceParam> paramList = SessionContext.getSqlSession().query(DmResourceParam.class,"select * from DM_RESOURCE_PARAMS where RESOURCE_ID in(select id from DM_RESOURCE where id='"+dmResource.getId()+"') and PARAM_TYPE=0 order by ORDER_CODE");
 		resource.setNameSpace(dmResource.getResourceName());

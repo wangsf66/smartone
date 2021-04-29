@@ -18,7 +18,7 @@ public class DmResourceParam extends BasicEntity {
     @ApiEntityParam
     private String datatype; 
     @ApiEntityParam
-    private Integer length; 
+    private Integer length=0; 
     @ApiEntityParam
     private String defaultValue = "";
     @ApiEntityParam

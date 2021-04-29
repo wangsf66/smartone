@@ -25,7 +25,7 @@ public class ParameterDeterminationUtil {
 	
 	/**
 	  * 从content中解析出parameter集合
-	  */
+	*/
 	public static Object parseParamsSet(DmResource dmResource) {
 		List<DmResourceParam> sqlResultSets = new ArrayList<DmResourceParam>();
 		String content = dmResource.getContent();
@@ -149,21 +149,4 @@ public class ParameterDeterminationUtil {
 		}
 		return sqlResultList;
 	}
-	
-//	public static void main(String[] args) {
-//		String content  = "DECLARE @temptable TABLE(BOM_ID varchar(50))\r\n" + 
-//				"INSERT INTO @temptable(BOM_ID) SELECT[value] FROM [dbo].F_Split($BOM_ID$,',')\r\n" + 
-//				"\r\n" + 
-//				"INSERT INTO MPM_WEIGH(ID,PROCESS_ID,STEP_ID,RECIPE_ID,PBOM_ID,MATERIAL_ID,BATCH_NUMBER,\r\n" + 
-//				"                      FACTORY,MATERIAL_NUMBER,MATERIAL_WEIGHT,ERROR_VALUE,USE_WEIGHTER,USE_VESSEL,\r\n" + 
-//				"					  RATIO,DATA_TYPE,SORTCODE,REMARK,\r\n" + 
-//				"					  CREATE_USER_ID,CREATE_USER_NAME,CREATE_DATE,LAST_UPDATE_USER_ID,LAST_UPDATE_USER_NAME,LAST_UPDATE_DATE,PROJECT_ID,PROJECT_NAME,CUSTOMER_ID,CUSTOMER_NAME)\r\n" + 
-//				"SELECT NEWID(),$PROCESS_ID$,$STEP_ID$,NULL,A.ID,A.MATERIAL_ID,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,2,NULL,NULL,\r\n" + 
-//				"'accountId','accountId',GETDATE(),'accountId','accountId',GETDATE(),'projectId','projectId','customerId','customerId' \r\n" + 
-//				"FROM MPM_PROCESS_BOM A\r\n" + 
-//				"WHERE A.ID IN(SELECT BOM_ID FROM @temptable)\r\n" + 
-//				"";
-//		String  sqlparam = content.substring(120).toString();
-//		System.out.println(sqlparam);
-//	}
 }

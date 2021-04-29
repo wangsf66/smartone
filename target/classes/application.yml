@@ -14,19 +14,13 @@ spring:
     port: 6379
    
   datasource:
-#         url: jdbc:sqlserver://192.168.1.111:1433;DatabaseName=test
-#         username: sa
-#         password: 123_abc
-#         url: jdbc:sqlserver://localhost:1433;DatabaseName=test
-#         username: sa
-#         password: 123123
-          url: jdbc:sqlserver://192.168.1.111:1433;DatabaseName=SmartOne2_suite
-          username: sa
-          password: 123_abc  
-          type: com.alibaba.druid.pool.DruidDataSource
+  
+      url: jdbc:sqlserver://localhost:1433;DatabaseName=smartone
+      username: sa
+      password: 123123
+      type: com.alibaba.druid.pool.DruidDataSource
   application:
-     name: smartone2
-#    name: smartoneTest
+     name: smartone
 i18n:
     enable-redis-store: true
 
@@ -46,13 +40,4 @@ eureka:
     service-url:
       defaultZone: http://192.168.1.111:8101/eureka/
       
-com:
-  smartone:
-    login:
-      token:
-        maximum-number-request: 3
-        failure-duration: 1800
-        lock-duration: 900
-        not-filter-urls: /account/login,/account/loginout
-
 
